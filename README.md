@@ -112,6 +112,27 @@ Best fit: fast local triage, tool-routing, voice assistant, long-context
 RAG summarization. Not a replacement for GLM-5.3/Ornith on hard analysis
 — 1.7B-class reasoning, E4B-class tool calling.
 
+## Agentic coding standard (Nov 2026) — staged-build bridge
+
+For one-shot generative work (HTML games, single-file apps) served from llama.cpp and
+driven through Serena MCP tools, use the staged-build profile proven in
+[lfm3-serena-html-test](https://github.com/drwjkirkpatrick-web/lfm3-serena-html-test).
+This is the new standard for future projects:
+
+- **Never one-shot the whole artifact.** LFM3 (and small models generally) over-plan:
+  attempt 1 burned 46.7K tokens on a 3K prompt — 116K chars of think-block planning
+  (45K plan tokens), then emitted only a 3K-char skeleton and stopped cleanly.
+- **System prompt mandates a staged build:** turn 1 `create_text_file` skeleton with
+  named empty stubs (`generateDungeon()`, `spawnEnemies()`, …); following turns
+  `replace_content` exactly ONE stub per turn (~120 lines each); final turns
+  `read_file`/`list_dir` verification + feature report.
+- **Bridge settings (canonical in that repo):** max_tokens **65536/turn**,
+  trimmer `context_window` **262144**, vendor sampling (temp 0.1 / top-k 50 / rp 1.1),
+  30-turn budget, 8K tool-result truncation.
+- Result pattern: short think blocks, read-modify-write cycles, incremental verified
+  output — the model codes like an agent instead of collapsing at the end of a
+  mega-emission.
+
 ## Artifacts
 
 - Suite results: `/tmp/test_results_lfm3-1.7b-{q4km,q4km-v2,qad}.json`
